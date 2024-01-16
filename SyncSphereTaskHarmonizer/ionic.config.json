@@ -1,0 +1,7 @@
+{
+  "name": "SyncSphereTaskHarmonizer",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
