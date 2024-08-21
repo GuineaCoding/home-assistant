@@ -1,23 +1,47 @@
+import React, { useState } from 'react';
+import {
+  IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList,
+  IonItem, IonAvatar, IonLabel, IonImg
+} from '@ionic/react';
 
-import React from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+interface Item {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+}
 
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Details</ion-title>
-  </ion-toolbar>
-</ion-header>
+const DetailPage: React.FC = () => {
+  const [items, setItems] = useState<Item[]>([
+    { id: 1, title: 'Item 1', description: 'Description for item 1', imageUrl: 'path/to/image1.jpg' },
+    { id: 2, title: 'Item 2', description: 'Description for item 2', imageUrl: 'path/to/image2.jpg' },
+    { id: 3, title: 'Item 3', description: 'Description for item 3', imageUrl: 'path/to/image3.jpg' }
+  ]);
 
-<ion-content>
-  <ion-list>
-    <ion-item *ngFor="let item of items" lines="full">
-      <ion-avatar slot="start">
-        <img [src]="item.imageUrl">
-      </ion-avatar>
-      <ion-label>
-        <h2>{{ item.title }}</h2>
-        <p>{{ item.description }}</p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
-</ion-content>
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Details</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <IonList>
+          {items.map((item) => (
+            <IonItem key={item.id} lines="full">
+              <IonAvatar slot="start">
+                <IonImg src={item.imageUrl} />
+              </IonAvatar>
+              <IonLabel>
+                <h2>{item.title}</h2>
+                <p>{item.description}</p>
+              </IonLabel>
+            </IonItem>
+          ))}
+        </IonList>
+      </IonContent>
+    </IonPage>
+  );
+};
+
+export default DetailPage;
