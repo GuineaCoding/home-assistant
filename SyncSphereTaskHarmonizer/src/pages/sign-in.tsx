@@ -1,19 +1,36 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Sign In</ion-title>
-  </ion-toolbar>
-</ion-header>
+import React from 'react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/react';
 
-<ion-content class="ion-padding">
-  <form>
-    <ion-item>
-      <ion-label position="floating">Username</ion-label>
-      <ion-input type="text" required></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Password</ion-label>
-      <ion-input type="password" required></ion-input>
-    </ion-item>
-    <ion-button expand="block" type="submit" class="ion-margin-top">Sign In</ion-button>
-  </form>
-</ion-content>
+const SignIn: React.FC = () => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+   
+    console.log('Sign In Submitted');
+  };
+
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Sign In</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+
+      <IonContent className="ion-padding">
+        <form onSubmit={handleSubmit}>
+          <IonItem>
+            <IonLabel position="floating">Username</IonLabel>
+            <IonInput type="text" required />
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Password</IonLabel>
+            <IonInput type="password" required />
+          </IonItem>
+          <IonButton expand="block" type="submit" className="ion-margin-top">Sign In</IonButton>
+        </form>
+      </IonContent>
+    </IonPage>
+  );
+};
+
+export default SignIn;
