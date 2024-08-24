@@ -9,7 +9,7 @@ import {
   IonLabel,
   IonInput,
   IonButton,
-  IonAlert
+  IonAlert,
 } from '@ionic/react';
 
 const Signup: React.FC = () => {
