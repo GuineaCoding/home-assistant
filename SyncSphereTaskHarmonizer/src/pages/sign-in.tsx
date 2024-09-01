@@ -1,11 +1,21 @@
-import React from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/react';
+import React, { useState } from 'react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonItem, IonLabel, IonButton } from '@ionic/react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../environments/environment';
 
 const SignIn: React.FC = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignIn = async () => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      console.log('Signed in:', result.user);
    
-    console.log('Sign In Submitted');
+    } catch (error) {
+      console.error('Error signing in:', error);
+   
+    }
   };
 
   return (
@@ -15,19 +25,16 @@ const SignIn: React.FC = () => {
           <IonTitle>Sign In</IonTitle>
         </IonToolbar>
       </IonHeader>
-
       <IonContent className="ion-padding">
-        <form onSubmit={handleSubmit}>
-          <IonItem>
-            <IonLabel position="floating">Username</IonLabel>
-            <IonInput type="text" required />
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Password</IonLabel>
-            <IonInput type="password" required />
-          </IonItem>
-          <IonButton expand="block" type="submit" className="ion-margin-top">Sign In</IonButton>
-        </form>
+        <IonItem>
+          <IonLabel position="floating">Email</IonLabel>
+          <IonInput value={email} onIonChange={e => setEmail(e.detail.value!)} />
+        </IonItem>
+        <IonItem>
+          <IonLabel position="floating">Password</IonLabel>
+          <IonInput type="password" value={password} onIonChange={e => setPassword(e.detail.value!)} />
+        </IonItem>
+        <IonButton expand="block" onClick={handleSignIn}>Sign In</IonButton>
       </IonContent>
     </IonPage>
   );
