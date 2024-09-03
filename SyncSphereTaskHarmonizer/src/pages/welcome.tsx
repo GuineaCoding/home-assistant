@@ -1,37 +1,49 @@
 import React from 'react';
-import { IonActionSheet, IonButton } from '@ionic/react';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonButton,
+  IonButtons,
+  IonIcon
+} from '@ionic/react';
+import { logInOutline, personAddOutline } from 'ionicons/icons';
+import { useHistory } from 'react-router-dom';
 
-function Example() {
+const WelcomePage: React.FC = () => {
+  const history = useHistory();
+
+  const handleSignIn = () => {
+    history.push('/signin');
+  };
+
+  const handleSignUp = () => {
+    history.push('/signup');
+  };
+
   return (
-    <>
-      <IonButton id="open-action-sheet">Open</IonButton>
-      <IonActionSheet
-        trigger="open-action-sheet"
-        header="Actions"
-        buttons={[
-          {
-            text: 'Delete',
-            role: 'destructive',
-            data: {
-              action: 'delete',
-            },
-          },
-          {
-            text: 'Share',
-            data: {
-              action: 'share',
-            },
-          },
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            data: {
-              action: 'cancel',
-            },
-          },
-        ]}
-      ></IonActionSheet>
-    </>
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Welcome</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent className="ion-padding">
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+          <IonButton expand="block" onClick={handleSignUp} style={{ marginBottom: '10px' }}>
+            <IonIcon slot="start" icon={personAddOutline} />
+            Sign Up
+          </IonButton>
+          <IonButton expand="block" onClick={handleSignIn}>
+            <IonIcon slot="start" icon={logInOutline} />
+            Sign In
+          </IonButton>
+        </div>
+      </IonContent>
+    </IonPage>
   );
-}
-export default Example;
+};
+
+export default WelcomePage;
