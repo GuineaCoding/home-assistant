@@ -23,7 +23,7 @@ const TaskManager: React.FC = () => {
   const addTask = () => {
     if (newTask.trim() !== '') {
       setTasks([...tasks, newTask]);
-      setNewTask(''); // Clear input after adding
+      setNewTask(''); 
     }
   };
 
