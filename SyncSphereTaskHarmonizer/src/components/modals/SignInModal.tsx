@@ -1,6 +1,8 @@
-// src/components/modals/SignInModal.tsx
+
 import React from 'react';
 import { IonModal, IonButton, IonContent, IonHeader, IonToolbar, IonTitle, IonItem, IonLabel, IonInput } from '@ionic/react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../environments/environment';
 
 interface SignInModalProps {
   show: boolean;

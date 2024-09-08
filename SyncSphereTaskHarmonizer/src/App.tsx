@@ -3,8 +3,6 @@ import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import WelcomePage from './pages/welcome'
-import Signup from './pages/Signup';
-import Signin from './pages/sign-in';
 import Dashboard from './pages/dashboard';
 
 
