@@ -1,4 +1,3 @@
-// src/pages/WelcomePage.tsx
 import React, { useState } from 'react';
 import { IonContent, IonButton, IonPage } from '@ionic/react';
 import SignInModal from '../components/modals/SignInModal';
