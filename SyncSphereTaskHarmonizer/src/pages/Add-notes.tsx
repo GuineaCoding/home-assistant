@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   IonContent,
   IonHeader,
@@ -11,13 +11,31 @@ import {
   IonTitle,
   IonButton
 } from "@ionic/react";
+import { db } from '../environments/environment'; 
+import { collection, addDoc } from "firebase/firestore"; 
 
 const AddNotes: React.FC = () => {
-  const [title, setTitle] = React.useState('');
-  const [content, setContent] = React.useState('');
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
 
-  const handleSaveNote = () => {
-    console.log("Note saved:", { title, content });
+  const handleSaveNote = async () => {
+    if (!title || !content) {
+      console.error("Title and content are required");
+      return;
+    }
+    
+    try {
+      await addDoc(collection(db, "notes"), {
+        title: title,
+        content: content,
+        created: new Date() 
+      });
+      console.log("Note added successfully");
+      setTitle('');  
+      setContent('');
+    } catch (err) {
+      console.error("Error adding document: ", err);
+    }
   };
 
   return (
