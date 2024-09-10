@@ -4,16 +4,10 @@ import {
 } from '@ionic/react';
 import { airplane, bluetooth, heart, wifi } from 'ionicons/icons';
 import './Home.css';
-import Notes from '../pages/Notes';
-import { useHistory } from 'react-router-dom';
+import { goToNotes } from '../components/general-functionality/redirect/RedirectToPages';
 
 const Home: React.FC = () => {
-  const history = useHistory();
-
-  const goToNotes = () => {
-      history.push('/notes');
-  };
-
+  const notesRedirect = goToNotes();
 
   return (
     <IonPage>
@@ -34,7 +28,7 @@ const Home: React.FC = () => {
             <IonCol>
               <IonIcon icon={airplane} size="large" />
               <IonText>Notes</IonText>
-              <IonButton onClick={goToNotes}>Go</IonButton>
+              <IonButton onClick={notesRedirect}>Go</IonButton>
             </IonCol>
             <IonCol>
               <IonIcon icon={bluetooth} size="large" />

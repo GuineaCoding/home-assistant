@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { IonModal, IonButton, IonContent, IonHeader, IonToast, IonToolbar, IonTitle, IonItem, IonLabel, IonInput } from '@ionic/react';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import app from '../../environments/environment'; 
-import {useRedirectToHome} from '../general-functionality/redirect/dashboardRedirect'
+import {goToHome} from '../general-functionality/redirect/RedirectToPages'
 
 interface SignUpModalProps {
   show: boolean;
@@ -14,7 +14,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ show, onClose }) => {
     const [password, setPassword] = useState('');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
-    const homeRedirect = useRedirectToHome();
+    const homeRedirect = goToHome();
     const auth = getAuth(app); 
   
     const handleSignup = async () => {

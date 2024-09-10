@@ -1,9 +1,10 @@
 import React from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemGroup, IonItemDivider, IonLabel, IonItem, IonFab, IonFabButton, IonIcon } from '@ionic/react';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemGroup, IonItemDivider, IonLabel, IonItem, IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/react';
 import { add } from 'ionicons/icons';
-
+import { goToAddNotes } from '../components/general-functionality/redirect/RedirectToPages';
 
 const Notes: React.FC = () => {
+    const notePageRedirect = goToAddNotes();
     return (
         <IonPage>
             <IonHeader>
@@ -43,9 +44,9 @@ const Notes: React.FC = () => {
                         </IonItem>
                     </IonItemGroup>
                 </IonList>
-              
+              <IonButton onClick={notePageRedirect}>Datas</IonButton>
                 <IonFab vertical="bottom" horizontal="end" slot="fixed">
-                    <IonFabButton onClick={() => console.log('Add new note')}>
+                    <IonFabButton onClick={notePageRedirect}>
                         <IonIcon icon={add} />
                     </IonFabButton>
                 </IonFab>
