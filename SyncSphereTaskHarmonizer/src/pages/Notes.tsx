@@ -2,6 +2,7 @@ import React from 'react';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemGroup, IonItemDivider, IonLabel, IonItem, IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/react';
 import { add } from 'ionicons/icons';
 import { goToAddNotes } from '../components/general-functionality/redirect/RedirectToPages';
+import { getAuth } from 'firebase/auth';
 
 const Notes: React.FC = () => {
     const notePageRedirect = goToAddNotes();

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getAuth } from 'firebase/auth';
 import {
   IonContent,
   IonHeader,
@@ -9,32 +10,42 @@ import {
   IonTextarea,
   IonToolbar,
   IonTitle,
-  IonButton
+  IonButton,
+  IonToast
 } from "@ionic/react";
 import { db } from '../environments/environment'; 
-import { collection, addDoc } from "firebase/firestore"; 
+import { collection, doc, getDocs, addDoc, setDoc } from "firebase/firestore";
 
 const AddNotes: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const handleSaveNote = async () => {
-    if (!title || !content) {
-      console.error("Title and content are required");
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("No authenticated user found");
       return;
     }
-    
+  
+    if (!title.trim() || !content.trim()) {
+      console.error("Both title and content are required");
+      return;
+    }
+  
     try {
-      await addDoc(collection(db, "notes"), {
-        title: title,
-        content: content,
-        created: new Date() 
+      const notesRef = collection(db, `notes/${user.uid}/userNotes`); 
+      const docRef = await addDoc(notesRef, {
+        title: title.trim(),
+        content: content.trim(),
+        created: new Date(),
+        isPublic: false  
       });
-      console.log("Note added successfully");
-      setTitle('');  
-      setContent('');
+      console.log("Note added successfully with ID:", docRef.id);
     } catch (err) {
-      console.error("Error adding document: ", err);
+      console.error("Error adding document:", err);
     }
   };
 
@@ -67,6 +78,12 @@ const AddNotes: React.FC = () => {
           </IonItem>
 
           <IonButton expand="block" onClick={handleSaveNote}>Save Note</IonButton>
+          <IonToast
+            isOpen={showToast}
+            onDidDismiss={() => setShowToast(false)}
+            message={toastMessage}
+            duration={3000}
+          />
         </IonList>
       </IonContent>
     </IonPage>

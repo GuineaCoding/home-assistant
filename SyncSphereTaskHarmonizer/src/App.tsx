@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import WelcomePage from './pages/Welcome';
 import Notes from './pages/Notes';
 import AddNotes from './pages/Add-notes'
+import { AuthProvider } from './Context/AuthContext';
 
 
 /* Core CSS required for Ionic components to work properly */
@@ -31,6 +32,7 @@ setupIonicReact();
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
+    <AuthProvider>
       <IonRouterOutlet>
         <Route exact path="/WelcomePage">
           <WelcomePage />
@@ -48,6 +50,7 @@ const App: React.FC = () => (
           <Redirect to="/WelcomePage" />
         </Route>
       </IonRouterOutlet>
+      </AuthProvider>
     </IonReactRouter>
   </IonApp>
 );
