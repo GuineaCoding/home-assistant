@@ -3,11 +3,31 @@ import { IonModal, IonButton, IonContent, IonHeader, IonToast, IonToolbar, IonTi
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import app from '../../environments/environment'; 
 import {goToHome} from '../general-functionality/redirect/RedirectToPages'
+import { doc, setDoc } from "firebase/firestore";
+import { db } from '../../environments/environment'; 
 
 interface SignUpModalProps {
   show: boolean;
   onClose: () => void;
 }
+
+interface UserDetails {
+  email: string;
+  createdAt: Date;
+}
+
+function addUserDetailsToFirestore(userId:string, userDetails:UserDetails) {
+  const userRef = doc(db, "users", userId);
+  return setDoc(userRef, userDetails)  
+    .then(() => {
+      console.log("User details added to Firestore successfully.");
+    })
+    .catch((error) => {
+      console.error("Error adding user details to Firestore:", error);
+      throw error;  
+    });
+}
+
 
 const SignUpModal: React.FC<SignUpModalProps> = ({ show, onClose }) => {
     const [email, setEmail] = useState('');
@@ -23,10 +43,18 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ show, onClose }) => {
         setShowToast(true);
         return;
       }
-  
+    
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        console.log("User created successfully with email: ", userCredential.user.email);
+        console.log("User created successfully with email: ", userCredential.user.email, " and UID: ", userCredential.user.uid);
+    
+        // Pass userDetails as an object
+        const userDetails = {
+          email: userCredential.user.email,  
+          createdAt: new Date() 
+        };
+    
+        await addUserDetailsToFirestore(userCredential.user.uid, userDetails);
         setToastMessage('Signup successful!');
         setShowToast(true);
         homeRedirect();
@@ -38,6 +66,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ show, onClose }) => {
         setShowToast(true);
       }
     };
+    
 
   return (
     <IonModal isOpen={show} onDidDismiss={onClose}>
