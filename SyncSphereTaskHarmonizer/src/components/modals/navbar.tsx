@@ -11,6 +11,8 @@ import {
   IonIcon
 } from '@ionic/react';
 
+import './NavBar.css';
+
 const NavBar: React.FC = () => {
   return (
     <IonPage>
@@ -19,10 +21,10 @@ const NavBar: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>My App</IonTitle>
+          <IonTitle class="ion-text-center">My App</IonTitle> 
           <IonButtons slot="end">
             <IonButton>
-              <IonIcon icon={logOutOutline} />
+              <IonIcon icon={logOutOutline} style={{ marginRight: '5px' }} /> 
               Logout
             </IonButton>
           </IonButtons>
