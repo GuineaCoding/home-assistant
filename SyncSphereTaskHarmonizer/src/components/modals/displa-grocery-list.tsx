@@ -10,7 +10,10 @@ import {
   IonLabel,
   IonCheckbox,
   IonButton,
-  IonIcon
+  IonIcon,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption
 } from '@ionic/react';
 import { trashOutline } from 'ionicons/icons';
 
@@ -45,21 +48,21 @@ const GroceryListPage: React.FC = () => {
       <IonContent fullscreen>
         <IonList>
           {groceries.map(grocery => (
-            <IonItem key={grocery.id}>
-              <IonLabel>{grocery.name}</IonLabel>
-              <IonCheckbox 
-                slot="start" 
-                checked={grocery.checked} 
-                onIonChange={() => handleCheck(grocery.id)}
-              />
-              <IonButton 
-                slot="end" 
-                fill="clear" 
-                onClick={() => handleDelete(grocery.id)}
-              >
-                <IonIcon icon={trashOutline} />
-              </IonButton>
-            </IonItem>
+            <IonItemSliding key={grocery.id}>
+              <IonItem>
+                <IonCheckbox 
+                  slot="start" 
+                  checked={grocery.checked} 
+                  onIonChange={() => handleCheck(grocery.id)}
+                />
+                <IonLabel>{grocery.name}</IonLabel>
+              </IonItem>
+              <IonItemOptions side="end">
+                <IonItemOption color="danger" onClick={() => handleDelete(grocery.id)}>
+                  <IonIcon icon={trashOutline} slot="icon-only" />
+                </IonItemOption>
+              </IonItemOptions>
+            </IonItemSliding>
           ))}
         </IonList>
       </IonContent>
