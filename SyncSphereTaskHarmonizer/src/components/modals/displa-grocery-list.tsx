@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IonContent,
   IonHeader,
@@ -16,26 +16,39 @@ import {
   IonItemOption
 } from '@ionic/react';
 import { trashOutline } from 'ionicons/icons';
+import { db } from './firebaseConfig'; // Adjust the path as necessary
+import { collection, addDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 
 const GroceryListPage: React.FC = () => {
-  const [groceries, setGroceries] = useState([
-    { id: 1, name: 'Milk', checked: false },
-    { id: 2, name: 'Eggs', checked: false },
-    { id: 3, name: 'Bread', checked: false }
-  ]);
+  const [groceries, setGroceries] = useState([]);
 
-  const handleCheck = (id) => {
-    const newGroceries = groceries.map(item => {
-      if (item.id === id) {
-        return { ...item, checked: !item.checked };
-      }
-      return item;
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "groceries"), (snapshot) => {
+      const groceryList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setGroceries(groceryList);
     });
-    setGroceries(newGroceries);
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleCheck = async (id) => {
+    const groceryRef = doc(db, "groceries", id);
+    const grocery = groceries.find(item => item.id === id);
+    
+    if (grocery) {
+      await updateDoc(groceryRef, { checked: !grocery.checked });
+    }
   };
 
-  const handleDelete = (id) => {
-    setGroceries(groceries.filter(item => item.id !== id));
+  const handleDelete = async (id) => {
+    await deleteDoc(doc(db, "groceries", id));
+  };
+
+  const addGrocery = async (name) => {
+    await addDoc(collection(db, "groceries"), { name, checked: false });
   };
 
   return (
@@ -65,6 +78,7 @@ const GroceryListPage: React.FC = () => {
             </IonItemSliding>
           ))}
         </IonList>
+        <IonButton onClick={() => addGrocery('New Item')}>Add Grocery</IonButton>
       </IonContent>
     </IonPage>
   );
