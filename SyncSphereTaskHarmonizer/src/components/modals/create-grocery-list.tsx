@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IonContent,
   IonHeader,
@@ -14,33 +14,40 @@ import {
   IonCheckbox
 } from '@ionic/react';
 import { addCircleOutline, trashOutline } from 'ionicons/icons';
+import db from './firebaseConfig'; // Import Firestore
 
 const GroceryListPage: React.FC = () => {
-  const [groceryItems, setGroceryItems] = useState([
-    { id: 1, name: 'Milk', checked: false },
-    { id: 2, name: 'Eggs', checked: true },
-    { id: 3, name: 'Bread', checked: false }
-  ]);
-  const [newItem, setNewItem] = useState('');
+  const [groceryItems, setGroceryItems] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = db.collection('groceries').onSnapshot(snapshot => {
+      const groceriesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setGroceryItems(groceriesData);
+    });
+    return unsubscribe;
+  }, []);
 
   const handleAddItem = () => {
     if (newItem.trim()) {
-      const nextId = groceryItems.length + 1;
-      setGroceryItems([...groceryItems, { id: nextId, name: newItem.trim(), checked: false }]);
+      db.collection('groceries').add({
+        name: newItem.trim(),
+        checked: false
+      });
       setNewItem('');
     }
   };
 
-  const toggleItem = (id) => {
-    const updatedItems = groceryItems.map(item =>
-      item.id === id ? { ...item, checked: !item.checked } : item
-    );
-    setGroceryItems(updatedItems);
+  const toggleItem = (id, checked) => {
+    db.collection('groceries').doc(id).update({
+      checked: !checked
+    });
   };
 
   const deleteItem = (id) => {
-    setGroceryItems(groceryItems.filter(item => item.id !== id));
+    db.collection('groceries').doc(id).delete();
   };
+
+  const [newItem, setNewItem] = useState('');
 
   return (
     <IonPage>
@@ -53,7 +60,7 @@ const GroceryListPage: React.FC = () => {
         <IonList>
           {groceryItems.map(item => (
             <IonItem key={item.id}>
-              <IonCheckbox slot="start" checked={item.checked} onIonChange={() => toggleItem(item.id)} />
+              <IonCheckbox slot="start" checked={item.checked} onIonChange={() => toggleItem(item.id, item.checked)} />
               <IonLabel>{item.name}</IonLabel>
               <IonButton fill="clear" slot="end" onClick={() => deleteItem(item.id)}>
                 <IonIcon icon={trashOutline} />
