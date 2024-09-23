@@ -17,9 +17,9 @@ const AddTaskPage: React.FC = () => {
   const [dueDate, setDueDate] = useState('');
 
   const handleAddTask = () => {
-    // Logic to handle the task addition goes here
+   
     console.log("Task Added:", taskName, dueDate);
-    // Clear the form
+   
     setTaskName('');
     setDueDate('');
   };

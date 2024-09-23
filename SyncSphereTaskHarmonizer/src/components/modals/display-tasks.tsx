@@ -10,20 +10,23 @@ import {
   IonLabel,
   IonNote
 } from '@ionic/react';
-
-
-const initialTasks = [
-  { id: 1, name: 'Complete project report', dueDate: '2023-10-05' },
-  { id: 2, name: 'Prepare for meeting', dueDate: '2023-10-06' },
-  { id: 3, name: 'Call John', dueDate: '2023-10-07' }
-];
+import db from './firebaseConfig';  
 
 const DisplayTasksPage: React.FC = () => {
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState([]);
 
-  
   useEffect(() => {
-   
+    const unsubscribe = db.collection('tasks')
+      .orderBy('dueDate') 
+      .onSnapshot(snapshot => {
+        const tasksData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTasks(tasksData);
+      });
+
+    return () => unsubscribe();  
   }, []);
 
   return (
