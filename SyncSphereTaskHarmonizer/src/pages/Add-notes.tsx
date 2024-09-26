@@ -36,16 +36,17 @@ const AddNotes: React.FC = () => {
     }
   
     try {
-      const notesRef = collection(db, `notes/${user.uid}/userNotes`); 
+      const notesRef = collection(db, `notes/${user.uid}/userNotes`);
       const docRef = await addDoc(notesRef, {
         title: title.trim(),
         content: content.trim(),
         created: new Date(),
-        isPublic: false  
+        isPublic: false
       });
       console.log("Note added successfully with ID:", docRef.id);
     } catch (err) {
       console.error("Error adding document:", err);
+   
     }
   };
 
