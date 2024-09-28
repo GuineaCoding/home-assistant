@@ -11,7 +11,6 @@ interface Note {
 
       const Notes: React.FC = () => {
         const [notes, setNotes] = useState<Note[]>([]);
-          const [newNote, setNewNote] = useState<Note>({ title: '', content: '' });
 
             useEffect(() => {
                 const unsubscribe = onSnapshot(collection(db, 'notes'), (snapshot) => {
