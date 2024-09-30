@@ -1,59 +1,63 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemGroup, IonItemDivider, IonLabel, IonItem, IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/react';
 import { add } from 'ionicons/icons';
 import { goToAddNotes } from '../components/general-functionality/redirect/RedirectToPages';
 import { getAuth } from 'firebase/auth';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../environments/environment';  
 
 const Notes: React.FC = () => {
-    const notePageRedirect = goToAddNotes();
-    return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Notes</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent>
-                <IonList>
-                    <IonItemGroup>
-                        <IonItemDivider>
-                            <IonLabel>Section A</IonLabel>
-                        </IonItemDivider>
-                        <IonItem>
-                            <IonLabel>A1</IonLabel>
-                        </IonItem>
-                        <IonItem>
-                            <IonLabel>A2</IonLabel>
-                        </IonItem>
-                        <IonItem lines="none">
-                            <IonLabel>A3</IonLabel>
-                        </IonItem>
-                    </IonItemGroup>
-        
-                    <IonItemGroup>
-                        <IonItemDivider>
-                            <IonLabel>Section B</IonLabel>
-                        </IonItemDivider>
-                        <IonItem>
-                            <IonLabel>B1</IonLabel>
-                        </IonItem>
-                        <IonItem>
-                            <IonLabel>B2</IonLabel>
-                        </IonItem>
-                        <IonItem lines="none">
-                            <IonLabel>B3</IonLabel>
-                        </IonItem>
-                    </IonItemGroup>
-                </IonList>
-              <IonButton onClick={notePageRedirect}>Datas</IonButton>
-                <IonFab vertical="bottom" horizontal="end" slot="fixed">
-                    <IonFabButton onClick={notePageRedirect}>
-                        <IonIcon icon={add} />
-                    </IonFabButton>
-                </IonFab>
-            </IonContent>
-        </IonPage>
-    );
+  const [notes, setNotes] = useState<any[]>([]); 
+  const [loading, setLoading] = useState(true);  
+  const notePageRedirect = goToAddNotes();
+  const auth = getAuth();
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const userNotesCollection = collection(db, `users/${user.uid}/notes`);
+        const notesSnapshot = await getDocs(userNotesCollection);
+        const userNotes = notesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setNotes(userNotes);
+        setLoading(false);
+      }
+    };
+    fetchNotes();
+  }, [auth]);
+
+  if (loading) {
+    return <IonContent>Loading notes...</IonContent>;
+  }
+
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Notes</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent>
+        <IonList>
+          {notes.map((note, index) => (
+            <IonItem key={note.id || index}>
+              <IonLabel>{note.title}</IonLabel>
+              <IonLabel>{note.content}</IonLabel>
+            </IonItem>
+          ))}
+        </IonList>
+        <IonButton onClick={notePageRedirect}>Add Note</IonButton>
+        <IonFab vertical="bottom" horizontal="end" slot="fixed">
+          <IonFabButton onClick={notePageRedirect}>
+            <IonIcon icon={add} />
+          </IonFabButton>
+        </IonFab>
+      </IonContent>
+    </IonPage>
+  );
 };
 
 export default Notes;

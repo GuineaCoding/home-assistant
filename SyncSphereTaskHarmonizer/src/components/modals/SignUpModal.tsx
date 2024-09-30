@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { IonModal, IonButton, IonContent, IonHeader, IonToast, IonToolbar, IonTitle, IonItem, IonLabel, IonInput } from '@ionic/react';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
-import app from '../../environments/environment'; 
+import { app, db } from '../../environments/environment'; 
 import {goToHome} from '../general-functionality/redirect/RedirectToPages'
 import { doc, setDoc } from "firebase/firestore";
-import { db } from '../../environments/environment'; 
 
 interface SignUpModalProps {
   show: boolean;
