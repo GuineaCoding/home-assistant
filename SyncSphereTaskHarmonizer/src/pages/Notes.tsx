@@ -16,12 +16,17 @@ const Notes: React.FC = () => {
     const fetchNotes = async () => {
       const user = auth.currentUser;
       if (user) {
-        const userNotesCollection = collection(db, `users/${user.uid}/notes`);
+       
+        const userNotesCollection = collection(db, `notes/${user.uid}/userNotes`);
+        
+
         const notesSnapshot = await getDocs(userNotesCollection);
+        
         const userNotes = notesSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
+        
         setNotes(userNotes);
         setLoading(false);
       }
