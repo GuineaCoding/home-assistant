@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemGroup, IonItemDivider, IonLabel, IonItem, IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/react';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItemGroup, IonItemDivider, IonLabel, IonItem, IonFab, IonFabButton, IonIcon, IonButton, } from '@ionic/react';
 import { add } from 'ionicons/icons';
 import { goToAddNotes } from '../components/general-functionality/redirect/RedirectToPages';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../environments/environment';  
-
+import { trash } from 'ionicons/icons';
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]); 
   const [loading, setLoading] = useState(true);  
@@ -51,6 +51,7 @@ const Notes: React.FC = () => {
             <IonItem key={note.id || index}>
               <IonLabel>{note.title}</IonLabel>
               <IonLabel>{note.content}</IonLabel>
+              <IonIcon icon={trash} aria-label="Favorite" />
             </IonItem>
           ))}
         </IonList>
