@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonFab, IonFabButton, IonIcon, IonButton, IonInput, IonTextarea } from '@ionic/react';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonFab, IonFabButton, IonIcon, IonButton, IonInput, IonTextarea, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonRow, IonCol } from '@ionic/react';
 import { add, trash } from 'ionicons/icons';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../environments/environment'; 
+
 const Target: React.FC = () => {
   const [targets, setTargets] = useState<any[]>([]);  
   const [loading, setLoading] = useState(true);   
   const [newTargetTitle, setNewTargetTitle] = useState('');  
   const [newTargetDescription, setNewTargetDescription] = useState('');  
   const auth = getAuth();
-
 
   useEffect(() => {
     const fetchTargets = async () => {
@@ -40,13 +40,11 @@ const Target: React.FC = () => {
       };
       const newTargetDoc = await addDoc(userTargetsCollection, targetData);
 
-   
       setTargets([...targets, { id: newTargetDoc.id, ...targetData }]);
       setNewTargetTitle('');  
       setNewTargetDescription('');  
     }
   };
-
 
   const deleteTarget = async (targetId: string) => {
     try {
@@ -70,42 +68,59 @@ const Target: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Targets</IonTitle>
+          <IonTitle>Your Targets</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
+     
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Add New Target</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <IonItem>
+              <IonInput
+                placeholder="Enter target title"
+                value={newTargetTitle}
+                onIonChange={(e) => setNewTargetTitle(e.detail.value!)}
+              />
+            </IonItem>
+            <IonItem>
+              <IonTextarea
+                placeholder="Enter target description"
+                value={newTargetDescription}
+                onIonChange={(e) => setNewTargetDescription(e.detail.value!)}
+              />
+            </IonItem>
+            <IonButton expand="block" onClick={addTarget}>
+              Add Target
+            </IonButton>
+          </IonCardContent>
+        </IonCard>
+
+  
         <IonList>
           {targets.map((target) => (
-            <IonItem key={target.id}>
-              <IonLabel>
-                <h2>{target.title}</h2>
+            <IonCard key={target.id}>
+              <IonCardHeader>
+                <IonCardTitle>{target.title}</IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
                 <p>{target.description}</p>
-              </IonLabel>
-              <IonButton color="danger" fill="clear" onClick={() => deleteTarget(target.id)}>
-                <IonIcon icon={trash} />
-              </IonButton>
-            </IonItem>
+                <IonRow>
+                  <IonCol size="9"></IonCol>
+                  <IonCol size="3">
+                    <IonButton color="danger" fill="clear" onClick={() => deleteTarget(target.id)}>
+                      <IonIcon icon={trash} />
+                    </IonButton>
+                  </IonCol>
+                </IonRow>
+              </IonCardContent>
+            </IonCard>
           ))}
         </IonList>
 
-
-        <IonItem>
-          <IonInput
-            placeholder="Enter new target title"
-            value={newTargetTitle}
-            onIonChange={(e) => setNewTargetTitle(e.detail.value!)}
-          />
-        </IonItem>
-        <IonItem>
-          <IonTextarea
-            placeholder="Enter new target description"
-            value={newTargetDescription}
-            onIonChange={(e) => setNewTargetDescription(e.detail.value!)}
-          />
-        </IonItem>
-        <IonButton onClick={addTarget}>Add Target</IonButton>
-
- 
+     
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
           <IonFabButton onClick={addTarget}>
             <IonIcon icon={add} />
