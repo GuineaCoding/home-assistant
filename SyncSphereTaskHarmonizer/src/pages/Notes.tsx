@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem, IonFab, IonFabButton, IonIcon, IonButton } from '@ionic/react';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem, IonFab, IonFabButton, IonIcon, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonRow, IonCol } from '@ionic/react';
 import { add, trash } from 'ionicons/icons';
 import { goToAddNotes } from '../components/general-functionality/redirect/RedirectToPages';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
-import { db } from '../environments/environment';  
+import { db } from '../environments/environment';
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]); 
@@ -36,7 +36,6 @@ const Notes: React.FC = () => {
         const noteDocRef = doc(db, `notes/${user.uid}/userNotes/${noteId}`);
         await deleteDoc(noteDocRef);
 
-        // Update the UI by filtering out the deleted note
         setNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
       }
     } catch (error) {
@@ -58,18 +57,26 @@ const Notes: React.FC = () => {
       <IonContent>
         <IonList>
           {notes.map((note, index) => (
-            <IonItem key={note.id || index}>
-              <IonLabel>
-                <h2>{note.title}</h2>
+            <IonCard key={note.id || index}>
+              <IonCardHeader>
+                <IonCardTitle>{note.title}</IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
                 <p>{note.content}</p>
-              </IonLabel>
-              <IonButton color="danger" fill="clear" onClick={() => deleteNote(note.id)}>
-                <IonIcon icon={trash} />
-              </IonButton>
-            </IonItem>
+                <IonRow>
+                  <IonCol size="9"></IonCol>
+                  <IonCol size="3">
+                    <IonButton color="danger" fill="clear" onClick={() => deleteNote(note.id)}>
+                      <IonIcon icon={trash} />
+                    </IonButton>
+                  </IonCol>
+                </IonRow>
+              </IonCardContent>
+            </IonCard>
           ))}
         </IonList>
-        <IonButton onClick={notePageRedirect}>Add Note</IonButton>
+
+   
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
           <IonFabButton onClick={notePageRedirect}>
             <IonIcon icon={add} />
