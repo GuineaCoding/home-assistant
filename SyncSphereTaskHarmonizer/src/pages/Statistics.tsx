@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonGrid, IonRow, IonCol } from '@ionic/react';
+import { 
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, 
+  IonCard, IonCardContent, IonCardHeader, IonCardTitle, 
+  IonGrid, IonRow, IonCol, IonBadge
+} from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../environments/environment';
@@ -58,7 +62,9 @@ const MyStatistics: React.FC = () => {
                   <IonCardTitle>Total Notes</IonCardTitle>
                 </IonCardHeader>
                 <IonCardContent>
-                  {statistics.totalNotes}
+                  <IonBadge color="primary" style={{ fontSize: '1.2em' }}>
+                    {statistics.totalNotes}
+                  </IonBadge>
                 </IonCardContent>
               </IonCard>
             </IonCol>
@@ -68,7 +74,9 @@ const MyStatistics: React.FC = () => {
                   <IonCardTitle>Average Note Length</IonCardTitle>
                 </IonCardHeader>
                 <IonCardContent>
-                  {statistics.averageContentLength} characters
+                  <IonBadge color="secondary" style={{ fontSize: '1.2em' }}>
+                    {statistics.averageContentLength} characters
+                  </IonBadge>
                 </IonCardContent>
               </IonCard>
             </IonCol>
