@@ -4,7 +4,10 @@ import {
   IonContent,
   IonHeader,
   IonPage,
-  IonList,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
   IonItem,
   IonLabel,
   IonTextarea,
@@ -14,7 +17,7 @@ import {
   IonToast
 } from "@ionic/react";
 import { db } from '../environments/environment'; 
-import { collection, doc, getDocs, addDoc, setDoc } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 
 const AddNotes: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -26,12 +29,14 @@ const AddNotes: React.FC = () => {
     const auth = getAuth();
     const user = auth.currentUser;
     if (!user) {
-      console.error("No authenticated user found");
+      setToastMessage("No authenticated user found");
+      setShowToast(true);
       return;
     }
   
     if (!title.trim() || !content.trim()) {
-      console.error("Both title and content are required");
+      setToastMessage("Both title and content are required");
+      setShowToast(true);
       return;
     }
   
@@ -43,10 +48,13 @@ const AddNotes: React.FC = () => {
         created: new Date(),
         isPublic: false
       });
-      console.log("Note added successfully with ID:", docRef.id);
+      setToastMessage("Note added successfully!");
+      setShowToast(true);
+      setTitle('');
+      setContent('');
     } catch (err) {
-      console.error("Error adding document:", err);
-   
+      setToastMessage("Error adding note: " + err.message);
+      setShowToast(true);
     }
   };
 
@@ -58,34 +66,40 @@ const AddNotes: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <IonList>
-          <IonItem>
-            <IonLabel position="floating">Title</IonLabel>
-            <IonTextarea
-              value={title}
-              onIonChange={(e) => setTitle(e.detail.value!)}
-              placeholder="Enter note title"
-            />
-          </IonItem>
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Add a new note</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <IonItem>
+              <IonLabel position="floating">Title</IonLabel>
+              <IonTextarea
+                value={title}
+                onIonChange={(e) => setTitle(e.detail.value!)}
+                placeholder="Enter note title"
+              />
+            </IonItem>
 
-          <IonItem>
-            <IonLabel position="floating">Content</IonLabel>
-            <IonTextarea
-              value={content}
-              onIonChange={(e) => setContent(e.detail.value!)}
-              placeholder="Write your notes here..."
-              autoGrow={true}
-            />
-          </IonItem>
+            <IonItem>
+              <IonLabel position="floating">Content</IonLabel>
+              <IonTextarea
+                value={content}
+                onIonChange={(e) => setContent(e.detail.value!)}
+                placeholder="Write your notes here..."
+                autoGrow={true}
+              />
+            </IonItem>
 
-          <IonButton expand="block" onClick={handleSaveNote}>Save Note</IonButton>
-          <IonToast
-            isOpen={showToast}
-            onDidDismiss={() => setShowToast(false)}
-            message={toastMessage}
-            duration={3000}
-          />
-        </IonList>
+            <IonButton expand="block" onClick={handleSaveNote} style={{ marginTop: '20px' }}>Save Note</IonButton>
+          </IonCardContent>
+        </IonCard>
+        
+        <IonToast
+          isOpen={showToast}
+          onDidDismiss={() => setShowToast(false)}
+          message={toastMessage}
+          duration={3000}
+        />
       </IonContent>
     </IonPage>
   );
