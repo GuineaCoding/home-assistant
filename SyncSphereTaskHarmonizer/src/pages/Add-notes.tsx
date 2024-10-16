@@ -53,7 +53,11 @@ const AddNotes: React.FC = () => {
       setTitle('');
       setContent('');
     } catch (err) {
-      setToastMessage("Error adding note: " + err.message);
+      if (err instanceof Error) {
+        setToastMessage("Error adding note: " + err.message);
+      } else {
+        setToastMessage("An unknown error occurred");
+      }
       setShowToast(true);
     }
   };
