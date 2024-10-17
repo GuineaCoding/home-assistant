@@ -1,6 +1,7 @@
+import React from 'react';
 import {
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
-  IonGrid, IonRow, IonCol, IonButton, IonIcon, IonText, IonCard, IonCardContent
+  IonGrid, IonRow, IonCol, IonButton, IonIcon, IonText, IonCard, IonCardContent, IonCardHeader
 } from '@ionic/react';
 import { airplane, bluetooth, heart, wifi } from 'ionicons/icons';
 import { goToNotes } from '../components/general-functionality/redirect/RedirectToPages';
@@ -26,18 +27,22 @@ const Home: React.FC = () => {
           <IonRow>
             <IonCol>
               <IonCard>
-                <IonCardContent className="ion-text-center">
+                <IonCardHeader>
                   <IonIcon icon={airplane} size="large" />
-                  <IonText>Notes</IonText>
+                  <IonText><h2>Notes</h2></IonText>
+                </IonCardHeader>
+                <IonCardContent className="ion-text-center">
                   <IonButton expand="block" onClick={notesRedirect}>Go to Notes</IonButton>
                 </IonCardContent>
               </IonCard>
             </IonCol>
             <IonCol>
               <IonCard>
-                <IonCardContent className="ion-text-center">
+                <IonCardHeader>
                   <IonIcon icon={bluetooth} size="large" />
-                  <IonText>Connect</IonText>
+                  <IonText><h2>Connect</h2></IonText>
+                </IonCardHeader>
+                <IonCardContent className="ion-text-center">
                   <IonButton expand="block">Connect</IonButton>
                 </IonCardContent>
               </IonCard>
@@ -47,18 +52,22 @@ const Home: React.FC = () => {
           <IonRow>
             <IonCol>
               <IonCard>
-                <IonCardContent className="ion-text-center">
+                <IonCardHeader>
                   <IonIcon icon={heart} size="large" />
-                  <IonText>Tasks</IonText>
+                  <IonText><h2>Tasks</h2></IonText>
+                </IonCardHeader>
+                <IonCardContent className="ion-text-center">
                   <IonButton expand="block">Check Tasks</IonButton>
                 </IonCardContent>
               </IonCard>
             </IonCol>
             <IonCol>
               <IonCard>
-                <IonCardContent className="ion-text-center">
+                <IonCardHeader>
                   <IonIcon icon={wifi} size="large" />
-                  <IonText>Internet</IonText>
+                  <IonText><h2>Internet</h2></IonText>
+                </IonCardHeader>
+                <IonCardContent className="ion-text-center">
                   <IonButton expand="block">Access</IonButton>
                 </IonCardContent>
               </IonCard>
