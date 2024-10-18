@@ -21,10 +21,14 @@ const NavBar: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle class="ion-text-center">My App</IonTitle> 
+
+          <IonTitle class="ion-text-center" style={{ flex: 1, textAlign: 'center' }}>
+            My App
+          </IonTitle>
+
           <IonButtons slot="end">
             <IonButton>
-              <IonIcon icon={logOutOutline} style={{ marginRight: '5px' }} /> 
+              <IonIcon icon={logOutOutline} />
               Logout
             </IonButton>
           </IonButtons>
