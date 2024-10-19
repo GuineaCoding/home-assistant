@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonFab, IonFabButton, IonIcon, IonButton, IonInput } from '@ionic/react';
-import { add, trash } from 'ionicons/icons';
+import { add, trash, createOutline } from 'ionicons/icons';
 import { getAuth } from 'firebase/auth';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../environments/environment'; 
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../environments/environment';
 
 const Tasks: React.FC = () => {
-  const [tasks, setTasks] = useState<any[]>([]);  
-  const [loading, setLoading] = useState(true);   
-  const [newTask, setNewTask] = useState('');   
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newTask, setNewTask] = useState('');
+  const [editTaskId, setEditTaskId] = useState<string | null>(null);
+  const [editTaskTitle, setEditTaskTitle] = useState('');
   const auth = getAuth();
 
- 
   useEffect(() => {
     const fetchTasks = async () => {
       const user = auth.currentUser;
@@ -29,33 +30,34 @@ const Tasks: React.FC = () => {
     fetchTasks();
   }, [auth]);
 
-  
   const addTask = async () => {
     const user = auth.currentUser;
     if (user && newTask.trim() !== '') {
       const userTasksCollection = collection(db, `tasks/${user.uid}/userTasks`);
       const taskData = { title: newTask, createdAt: new Date() };
       const newTaskDoc = await addDoc(userTasksCollection, taskData);
-
-     
       setTasks([...tasks, { id: newTaskDoc.id, ...taskData }]);
-      setNewTask(''); 
+      setNewTask('');
     }
   };
 
-
   const deleteTask = async (taskId: string) => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        const taskDocRef = doc(db, `tasks/${user.uid}/userTasks/${taskId}`);
-        await deleteDoc(taskDocRef);
+    const user = auth.currentUser;
+    if (user) {
+      const taskDocRef = doc(db, `tasks/${user.uid}/userTasks/${taskId}`);
+      await deleteDoc(taskDocRef);
+      setTasks(tasks.filter(task => task.id !== taskId));
+    }
+  };
 
-    
-        setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
-      }
-    } catch (error) {
-      console.error("Error deleting task: ", error);
+  const editTask = async () => {
+    const user = auth.currentUser;
+    if (user && editTaskId && editTaskTitle.trim() !== '') {
+      const taskDocRef = doc(db, `tasks/${user.uid}/userTasks/${editTaskId}`);
+      await updateDoc(taskDocRef, { title: editTaskTitle });
+      setTasks(tasks.map(task => task.id === editTaskId ? { ...task, title: editTaskTitle } : task));
+      setEditTaskId(null);
+      setEditTaskTitle('');
     }
   };
 
@@ -74,10 +76,23 @@ const Tasks: React.FC = () => {
         <IonList>
           {tasks.map((task) => (
             <IonItem key={task.id}>
-              <IonLabel>{task.title}</IonLabel>
+              {editTaskId === task.id ? (
+                <IonInput
+                  value={editTaskTitle}
+                  onIonChange={(e) => setEditTaskTitle(e.detail.value!)}
+                />
+              ) : (
+                <IonLabel>{task.title}</IonLabel>
+              )}
               <IonButton color="danger" fill="clear" onClick={() => deleteTask(task.id)}>
                 <IonIcon icon={trash} />
               </IonButton>
+              <IonButton fill="clear" onClick={() => { setEditTaskId(task.id); setEditTaskTitle(task.title); }}>
+                <IonIcon icon={createOutline} />
+              </IonButton>
+              {editTaskId === task.id && (
+                <IonButton onClick={editTask}>Save</IonButton>
+              )}
             </IonItem>
           ))}
         </IonList>
@@ -91,7 +106,6 @@ const Tasks: React.FC = () => {
           <IonButton onClick={addTask}>Add Task</IonButton>
         </IonItem>
 
-   
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
           <IonFabButton onClick={addTask}>
             <IonIcon icon={add} />
