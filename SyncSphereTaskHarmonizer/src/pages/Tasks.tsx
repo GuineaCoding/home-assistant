@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonFab, IonFabButton, IonIcon, IonButton, IonInput } from '@ionic/react';
-import { add, trash, createOutline } from 'ionicons/icons';
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem,
+  IonLabel, IonFab, IonFabButton, IonIcon, IonButton, IonInput, IonToast, IonCheckbox
+} from '@ionic/react';
+import { add, trash, createOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../environments/environment';
 
+interface Task {
+  id: string;
+  title: string;
+  isCompleted: boolean;
+}
+
 const Tasks: React.FC = () => {
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTask, setNewTask] = useState('');
   const [editTaskId, setEditTaskId] = useState<string | null>(null);
   const [editTaskTitle, setEditTaskTitle] = useState('');
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const auth = getAuth();
 
   useEffect(() => {
@@ -21,7 +32,8 @@ const Tasks: React.FC = () => {
         const tasksSnapshot = await getDocs(userTasksCollection);
         const userTasks = tasksSnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data(),
+          title: doc.data().title,
+          isCompleted: doc.data().isCompleted || false
         }));
         setTasks(userTasks);
         setLoading(false);
@@ -34,9 +46,9 @@ const Tasks: React.FC = () => {
     const user = auth.currentUser;
     if (user && newTask.trim() !== '') {
       const userTasksCollection = collection(db, `tasks/${user.uid}/userTasks`);
-      const taskData = { title: newTask, createdAt: new Date() };
+      const taskData = { title: newTask, isCompleted: false, createdAt: new Date() };
       const newTaskDoc = await addDoc(userTasksCollection, taskData);
-      setTasks([...tasks, { id: newTaskDoc.id, ...taskData }]);
+      setTasks([...tasks, { ...taskData, id: newTaskDoc.id }]);
       setNewTask('');
     }
   };
@@ -47,6 +59,15 @@ const Tasks: React.FC = () => {
       const taskDocRef = doc(db, `tasks/${user.uid}/userTasks/${taskId}`);
       await deleteDoc(taskDocRef);
       setTasks(tasks.filter(task => task.id !== taskId));
+    }
+  };
+
+  const toggleTaskCompletion = async (taskId: string, isCompleted: boolean) => {
+    const user = auth.currentUser;
+    if (user) {
+      const taskDocRef = doc(db, `tasks/${user.uid}/userTasks/${taskId}`);
+      await updateDoc(taskDocRef, { isCompleted: !isCompleted });
+      setTasks(tasks.map(task => task.id === taskId ? { ...task, isCompleted: !isCompleted } : task));
     }
   };
 
@@ -82,8 +103,11 @@ const Tasks: React.FC = () => {
                   onIonChange={(e) => setEditTaskTitle(e.detail.value!)}
                 />
               ) : (
-                <IonLabel>{task.title}</IonLabel>
+                <IonLabel style={{ textDecoration: task.isCompleted ? 'line-through' : 'none' }}>
+                  {task.title}
+                </IonLabel>
               )}
+              <IonCheckbox slot="start" checked={task.isCompleted} onIonChange={() => toggleTaskCompletion(task.id, task.isCompleted)} />
               <IonButton color="danger" fill="clear" onClick={() => deleteTask(task.id)}>
                 <IonIcon icon={trash} />
               </IonButton>
