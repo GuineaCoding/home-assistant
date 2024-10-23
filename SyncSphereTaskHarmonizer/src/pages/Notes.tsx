@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem, IonFab, IonFabButton, IonIcon, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonRow, IonCol } from '@ionic/react';
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonLabel, IonItem, IonFab,
+  IonFabButton, IonIcon, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonRow, IonCol, IonInput, IonSearchbar
+} from '@ionic/react';
 import { add, trash } from 'ionicons/icons';
 import { goToAddNotes } from '../components/general-functionality/redirect/RedirectToPages';
 import { getAuth } from 'firebase/auth';
@@ -7,8 +10,9 @@ import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../environments/environment';
 
 const Notes: React.FC = () => {
-  const [notes, setNotes] = useState<any[]>([]); 
-  const [loading, setLoading] = useState(true);  
+  const [notes, setNotes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState('');
   const notePageRedirect = goToAddNotes();
   const auth = getAuth();
 
@@ -20,7 +24,8 @@ const Notes: React.FC = () => {
         const notesSnapshot = await getDocs(userNotesCollection);
         const userNotes = notesSnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data(),
+          title: doc.data().title,
+          content: doc.data().content
         }));
         setNotes(userNotes);
         setLoading(false);
@@ -30,18 +35,18 @@ const Notes: React.FC = () => {
   }, [auth]);
 
   const deleteNote = async (noteId: string) => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        const noteDocRef = doc(db, `notes/${user.uid}/userNotes/${noteId}`);
-        await deleteDoc(noteDocRef);
-
-        setNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
-      }
-    } catch (error) {
-      console.error("Error deleting note: ", error);
+    const user = auth.currentUser;
+    if (user) {
+      const noteDocRef = doc(db, `notes/${user.uid}/userNotes/${noteId}`);
+      await deleteDoc(noteDocRef);
+      setNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
     }
   };
+
+  const filteredNotes = notes.filter(note =>
+    note.title.toLowerCase().includes(searchText.toLowerCase()) ||
+    note.content.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   if (loading) {
     return <IonContent>Loading notes...</IonContent>;
@@ -55,8 +60,14 @@ const Notes: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
+        <IonSearchbar
+          value={searchText}
+          onIonChange={e => setSearchText(e.detail.value!)}
+          placeholder="Search notes"
+        />
+
         <IonList>
-          {notes.map((note, index) => (
+          {filteredNotes.map((note, index) => (
             <IonCard key={note.id || index}>
               <IonCardHeader>
                 <IonCardTitle>{note.title}</IonCardTitle>
@@ -76,7 +87,6 @@ const Notes: React.FC = () => {
           ))}
         </IonList>
 
-   
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
           <IonFabButton onClick={notePageRedirect}>
             <IonIcon icon={add} />
