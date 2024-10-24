@@ -7,6 +7,8 @@ import {
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../environments/environment';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS } from 'chart.js/auto';
 
 interface Note {
   id: string;
@@ -21,6 +23,7 @@ interface Statistics {
 
 const MyStatistics: React.FC = () => {
   const [statistics, setStatistics] = useState<Statistics>({ totalNotes: 0, averageContentLength: 0 });
+  const [noteLengths, setNoteLengths] = useState<number[]>([]);
   const auth = getAuth();
 
   useEffect(() => {
@@ -37,14 +40,29 @@ const MyStatistics: React.FC = () => {
 
         const totalNotes = notes.length;
         const totalContentLength = notes.reduce((acc, note) => acc + note.content.length, 0);
-        const averageContentLength = totalNotes > 0 ? Math.round(totalContentLength / totalNotes) : 0;
-
-        setStatistics({ totalNotes, averageContentLength });
+        const noteLengthArray = notes.map(note => note.content.length);
+        
+        setNoteLengths(noteLengthArray);
+        setStatistics({
+          totalNotes,
+          averageContentLength: totalNotes > 0 ? Math.round(totalContentLength / totalNotes) : 0
+        });
       }
     };
 
     fetchNotesAndCalculateStatistics();
   }, []);
+
+  const data = {
+    labels: Array.from({ length: statistics.totalNotes }, (_, i) => `Note ${i + 1}`),
+    datasets: [
+      {
+        label: 'Note Content Length',
+        data: noteLengths,
+        backgroundColor: 'rgba(53, 162, 235, 0.5)'
+      }
+    ]
+  };
 
   return (
     <IonPage>
@@ -77,6 +95,7 @@ const MyStatistics: React.FC = () => {
                   <IonBadge color="secondary" style={{ fontSize: '1.2em' }}>
                     {statistics.averageContentLength} characters
                   </IonBadge>
+                  <Bar data={data} />
                 </IonCardContent>
               </IonCard>
             </IonCol>
