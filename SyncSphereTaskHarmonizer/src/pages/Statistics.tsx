@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, 
   IonCard, IonCardContent, IonCardHeader, IonCardTitle, 
-  IonGrid, IonRow, IonCol, IonBadge
+  IonGrid, IonRow, IonCol, IonBadge, IonList, IonItem
 } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
@@ -24,6 +24,7 @@ interface Statistics {
 const MyStatistics: React.FC = () => {
   const [statistics, setStatistics] = useState<Statistics>({ totalNotes: 0, averageContentLength: 0 });
   const [noteLengths, setNoteLengths] = useState<number[]>([]);
+  const [wordCounts, setWordCounts] = useState<{ word: string, count: number }[]>([]);
   const auth = getAuth();
 
   useEffect(() => {
@@ -42,6 +43,17 @@ const MyStatistics: React.FC = () => {
         const totalContentLength = notes.reduce((acc, note) => acc + note.content.length, 0);
         const noteLengthArray = notes.map(note => note.content.length);
         
+        // Calculate word frequency
+        const wordFrequency: Record<string, number> = {};
+        notes.forEach(note => {
+          note.content.toLowerCase().match(/\b(\w+)\b/g)?.forEach(word => {
+            wordFrequency[word] = (wordFrequency[word] || 0) + 1;
+          });
+        });
+        const sortedWords = Object.entries(wordFrequency).map(([word, count]) => ({ word, count }))
+          .sort((a, b) => b.count - a.count).slice(0, 10); // top 10 words
+        
+        setWordCounts(sortedWords);
         setNoteLengths(noteLengthArray);
         setStatistics({
           totalNotes,
@@ -96,6 +108,24 @@ const MyStatistics: React.FC = () => {
                     {statistics.averageContentLength} characters
                   </IonBadge>
                   <Bar data={data} />
+                </IonCardContent>
+              </IonCard>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol size="12">
+              <IonCard>
+                <IonCardHeader>
+                  <IonCardTitle>Top Words Used</IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  <IonList>
+                    {wordCounts.map(({ word, count }) => (
+                      <IonItem key={word}>
+                        {word}: {count} times
+                      </IonItem>
+                    ))}
+                  </IonList>
                 </IonCardContent>
               </IonCard>
             </IonCol>
