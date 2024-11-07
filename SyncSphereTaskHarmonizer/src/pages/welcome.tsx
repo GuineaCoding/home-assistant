@@ -9,37 +9,50 @@ const WelcomePage: React.FC = () => {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
 
+ 
+  const handleModalVisibility = (type: 'signIn' | 'signUp', state: boolean) => {
+    if (type === 'signIn') {
+      setShowSignIn(state);
+    } else {
+      setShowSignUp(state);
+    }
+  };
+
   return (
     <IonPage>
       <IonContent fullscreen className="ion-padding ion-text-center">
         <IonGrid fixed>
           <IonRow>
             <IonCol>
-              <IonText color="primary" style={{ fontSize: '1.8em', fontWeight: 'bold' }}>
+              <IonText color="primary" style={{ fontSize: '2em', fontWeight: 'bold' }}>
                 Welcome to Our Amazing App!
               </IonText>
-              <p style={{ fontSize: '1.2em', marginTop: '15px' }}>
-                Access all the features by signing in or signing up today.
+              <p style={{ fontSize: '1.4em', margin: '20px 0' }}>
+                Discover all the features by signing in or creating an account.
               </p>
             </IonCol>
           </IonRow>
-          <IonRow className="ion-justify-content-center" style={{ marginTop: '30px' }}>
-            <IonCol size="12" size-md="6">
-              <IonButton expand="block" onClick={() => setShowSignIn(true)}>Sign In</IonButton>
-              <IonModal isOpen={showSignIn} onDidDismiss={() => setShowSignIn(false)} swipeToClose={true}>
-                <SignInModal onClose={() => setShowSignIn(false)} />
+          <IonRow className="ion-justify-content-center" style={{ marginTop: '20px' }}>
+            <IonCol size="12" size-md="5">
+              <IonButton expand="block" onClick={() => handleModalVisibility('signIn', true)}>
+                Sign In
+              </IonButton>
+              <IonModal isOpen={showSignIn} onDidDismiss={() => handleModalVisibility('signIn', false)} swipeToClose={true}>
+                <SignInModal onClose={() => handleModalVisibility('signIn', false)} />
               </IonModal>
             </IonCol>
-            <IonCol size="12" size-md="6">
-              <IonButton expand="block" onClick={() => setShowSignUp(true)}>Sign Up</IonButton>
-              <IonModal isOpen={showSignUp} onDidDismiss={() => setShowSignUp(false)} swipeToClose={true}>
-                <SignUpModal onClose={() => setShowSignUp(false)} />
+            <IonCol size="12" size-md="5">
+              <IonButton expand="block" onClick={() => handleModalVisibility('signUp', true)}>
+                Sign Up
+              </IonButton>
+              <IonModal isOpen={showSignUp} onDidDismiss={() => handleModalVisibility('signUp', false)} swipeToClose={true}>
+                <SignUpModal onClose={() => handleModalVisibility('signUp', false)} />
               </IonModal>
             </IonCol>
           </IonRow>
-          <IonRow>
+          <IonRow style={{ marginTop: '50px' }}>
             <IonCol>
-              <IonImg src="/assets/images/welcome_image.svg" style={{ maxWidth: '100%', height: 'auto', marginTop: '40px' }} />
+              <IonImg src="/assets/images/welcome_image.svg" style={{ maxWidth: '80%', height: 'auto', margin: '0 auto' }} />
             </IonCol>
           </IonRow>
         </IonGrid>
