@@ -4,17 +4,20 @@ import {
 } from '@ionic/react';
 import SignInModal from '../components/modals/SignInModal';
 import SignUpModal from '../components/modals/SignUpModal';
+import TourModal from '../components/modals/TourModal'; 
 
 const WelcomePage: React.FC = () => {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
+  const [showTour, setShowTour] = useState(true); 
 
- 
-  const handleModalVisibility = (type: 'signIn' | 'signUp', state: boolean) => {
+  const handleModalVisibility = (type: 'signIn' | 'signUp' | 'tour', state: boolean) => {
     if (type === 'signIn') {
       setShowSignIn(state);
-    } else {
+    } else if (type === 'signUp') {
       setShowSignUp(state);
+    } else if (type === 'tour') {
+      setShowTour(state);
     }
   };
 
@@ -56,6 +59,12 @@ const WelcomePage: React.FC = () => {
             </IonCol>
           </IonRow>
         </IonGrid>
+
+        {/* Introduction Tour Modal */}
+        <IonModal isOpen={showTour} onDidDismiss={() => setShowTour(false)} swipeToClose={true}>
+          <TourModal onClose={() => setShowTour(false)} />
+        </IonModal>
+
       </IonContent>
     </IonPage>
   );
